@@ -182,3 +182,134 @@ git reset -- test.txt
 
 ---
 
+### 1.创建SSH Key
+
+```bash
+ssh-keygen -t rsa -C "jyn725@outlook.com"
+```
+
+在`\User`目录下看看有没有`.ssh`目录，目录下会有两个文件`id_rsa`, `id_rsa.pub`，`id_rsa`是私钥，不能泄露出去，`id_rsa.pub`是公钥
+
+
+
+### 2.github的个人setttings上添加key
+
+文本框里粘贴`id_rsa.pub`里面的内容
+
+
+
+### 3.登录github，创建一个仓库`Create a new repo`
+
+可以在本地的仓库下运行下列命令
+
+```bash
+git remote add origin git@github.com:JynStar725/lecture-notes.git
+```
+
+添加后，远程仓库的名字就是`origin`，这是git默认叫法，也可以改成别的，但是`origin`这个名字一看就是远程仓库
+
+下一步，把本地仓库的所有内容推送到远程库上：
+
+```bash
+git push -u origin master
+```
+
+把本地库内容推送到远程，用`git push`命令，实际上是把当前分支`master`推送到远程，由于是第一次推送，加上了`-u`参数，git不但会把本地`master`分支内容推送到远程新的`master`分支，还会把本地的`master`分支和远程的`master`分支关联起来，在以后的推送或者拉取的时候就可以简化命令。
+
+从现在起，只要推送，就可以通过命令
+
+```bash
+git push origin master
+```
+
+
+
+## Bug分支
+
+---
+
+当接到一个修复代号为101的bug任务时，很自然的，想要创建一个分支`issue-101`来修复它，但是，当前在dev分支上的进行的工作还没有提交。
+
+并不是不想提交，而是工作进行到一半，还没发提交，但是要修复bug怎办
+
+幸好，git提供了一个`stash`功能，可以把工作现场储藏起来，等回复现场后继续工作。
+
+```bash
+git stash
+```
+
+
+
+首先确定在哪个分支上修复bug，假定在`master`分支上修复，就从`master`创建临时分支
+
+```bash
+git checkout master
+git checkout -b issue-101
+```
+
+修复完成后，切换回`master`分支，并完成合并，最后删除issue-101分支
+
+```bash
+git checkout master
+
+git merge --no-ff -m "merge bug fix 101" issue-101
+```
+
+切换回dev分支干活
+
+```bash
+git checkout dev
+git status	// 可以看到工作区是干净的
+git stash list	// 查看保存的工作现场
+```
+
+一种是用`git stash apply`恢复，但是恢复后，stash内容并不删除，需要使用`git stash drop`来删除，另一种方式是用`git stash pop`，恢复的同时把stash内容也删除了
+
+```bash
+git stash pop
+```
+
+
+
+
+
+## 强行删除需要的分支
+
+---
+
+```bash
+git branch -D feature-vulcan
+```
+
+
+
+## 查看远程库的信息
+
+----
+
+```bash
+git remote	// 查看远程库的信息
+git remote -v	// 查看远程库的详细信息
+```
+
+### 
+
+### 推送分支
+
+推送时，要制定本地分支
+
+```bash
+git push origin master
+```
+
+如果要推送其他分支，比如`dev`分支
+
+```bash
+git push origin dev
+```
+
+创建远程`origin`的`dev`分支到本地，用命令创建本地`dev`分支
+
+```bash
+git checkout -b dev origin/dev
+```
